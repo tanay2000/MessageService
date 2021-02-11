@@ -1,26 +1,50 @@
 package com.example.demo.service.redis;
 
 
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.model.Blacklist;
 import com.example.demo.repository.BlacklistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class RedisServiceImpl implements RedisService{
 
+    private static final String KEY = "BLACKLIST";
+
+    @Autowired
+    private RedisTemplate redisTemplate;
     @Autowired
     BlacklistRepository blacklistRepository;
 
+    @Override
+    public void addNumberToBlacklist(Blacklist blackList,String phoneNumber) {
+        System.out.println("insert in db");
+        redisTemplate.opsForSet().add(KEY,phoneNumber);
+        blacklistRepository.save(blackList);
+    }
 
     @Override
-//    @Cacheable(value="Blacklist",key="#phoneNumber")
+    public void removeNumberFromBlacklist(String phoneNumber) {
+        System.out.println("delete from db");
+        try {
+            redisTemplate.opsForSet().remove(KEY, phoneNumber);
+            blacklistRepository.deleteById(phoneNumber);
+        }
+        catch (Exception exception){
+            throw new NotFoundException("No not in blacklist");
+        }
+    }
+
+    @Override
+    public List<String> findAllBlacklistedNumber() {
+        return blacklistRepository.findAllBlacklistedNumber();
+//        return redisTemplate.opsForSet().members(KEY);
+    }
+
+    @Override
     public Blacklist numberIsPresent(String phoneNumber)
     {
         System.out.println("ia am from db "+phoneNumber);
@@ -28,63 +52,12 @@ public class RedisServiceImpl implements RedisService{
     }
 
     @Override
-    @CachePut(value="Blacklist",key="#phoneNumber")
-    public void addNumberToBlacklist(Blacklist blackList,String phoneNumber) {
-        System.out.println("insert in db");
-        blacklistRepository.save(blackList);
-    }
+    public boolean checkIfExist(String phoneNumber){
+        if(redisTemplate.opsForSet().isMember(KEY,phoneNumber))
+            return true;
+        System.out.println("avvobwebvoweobv");
+        return blacklistRepository.existsById(phoneNumber);
 
-    @Override
-    public void removeNumberFromBlacklist(String phoneNumber) {
-        System.out.println("delete from db");
-        blacklistRepository.deleteById(phoneNumber);
-    }
-
-    @Override
-
-    public List<String> findAllBlacklistedNumber() {
-        return blacklistRepository.findAllBlacklistedNumber();
-    }
-
-
-    @Override
-    @Cacheable(value="Blacklist",key="#phoneNumber")
-    public Blacklist checkIfExist(String phoneNumber){
-        return blacklistRepository.getOne(phoneNumber);
     }
 }
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.data.redis.core.RedisTemplate;
-//import org.springframework.stereotype.Service;
-//import org.springframework.web.client.RestTemplate;
-//
-//import java.util.Set;
-//@Service
-//public class RedisServiceImpl implements  RedisService{
-//    @Autowired
-//    private RedisTemplate redisTemplate;
-//
-//    private static final String KEY = "BLACKLIST";
-//
-//    @Override
-//    public void addNumberToBlacklist(String phoneNo) {
-//        redisTemplate.opsForSet().add(KEY,phoneNo);
-//    }
-//
-//    @Override
-//    public void removeNumberFromBlacklist(String phoneNo) {
-//        redisTemplate.opsForSet().remove(KEY,phoneNo);
-//    }
-//
-//    @Override
-//    public Set showAllPhoneNo() {
-//        return redisTemplate.opsForSet().members(KEY);
-//    }
-//
-//    @Override
-//    public boolean checkIfExist(String phoneNo) {
-//        return redisTemplate.opsForSet().isMember(KEY,phoneNo);
-//    }
-//
-//
-//}
+
