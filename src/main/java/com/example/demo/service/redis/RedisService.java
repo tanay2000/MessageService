@@ -16,5 +16,5 @@ public interface RedisService {
 
     public Blacklist numberIsPresent(String phoneNumber);
 
-    public Blacklist checkIfExist(String phoneNumber);
+    public boolean checkIfExist(String phoneNumber);
 }

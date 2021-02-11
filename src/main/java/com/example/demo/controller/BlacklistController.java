@@ -4,6 +4,7 @@ package com.example.demo.controller;
 import com.example.demo.model.BlackListInput;
 import com.example.demo.model.Blacklist;
 
+import com.example.demo.repository.BlacklistRepository;
 import com.example.demo.response.data;
 import com.example.demo.response.error;
 import com.example.demo.service.redis.RedisService;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 
 @RestController
@@ -24,15 +26,15 @@ public class BlacklistController {
 
     @Autowired
     RedisService redisService;
-
+    @Autowired
+    BlacklistRepository blacklistRepository;
 
     @PostMapping
-//  @CachePut(value="Blacklist",key="#phoneNumber")
     public ResponseEntity<Object> addNumberToBlacklist(@RequestBody BlackListInput phone_numbers) {
-
         try {
             Blacklist blackList = new Blacklist();
             for (String phoneNumber : phone_numbers.getPhone_numbers()) {
+                if(phoneNumber.trim().isEmpty())
                 blackList.setPhoneNumber(phoneNumber);
                 System.out.println(phoneNumber);
                 redisService.addNumberToBlacklist(blackList, phoneNumber);
@@ -50,27 +52,21 @@ public class BlacklistController {
         }
 
     }
+    @DeleteMapping("/{phoneNumber}")
+    public void removeNumberFromBlacklist(@PathVariable String phoneNumber) {
+        redisService.removeNumberFromBlacklist(phoneNumber);
+//        blacklistRepository.deleteById(phoneNumber);
+    }
+
+    @GetMapping("/")
+    public List<String> findAllBlacklistedNumber() {
+        return redisService.findAllBlacklistedNumber();
+    }
 
     @GetMapping("/{phoneNumber}")
     public Blacklist isPresent(@PathVariable String phoneNumber) {
 
         return redisService.numberIsPresent(phoneNumber);
     }
-
-
-    @GetMapping("/")
-    public List<String> findAllBlacklistedNumber() {
-        List<String> data = redisService.findAllBlacklistedNumber();
-        return data;
-
-
-    }
-
-    @DeleteMapping("/{phoneNumber}")
-    @CacheEvict(value = "Blacklist", key = "#phoneNumber", allEntries = true)
-    public void removeNumberFromBlacklist(@PathVariable String phoneNumber) {
-        redisService.removeNumberFromBlacklist(phoneNumber);
-    }
-
 
 }
