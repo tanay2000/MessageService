@@ -22,3 +22,14 @@ public class Helper {
         return epoch;
     }
 }
+
+
+//    String url = "https://api.imiconnect.in/resources/v1/messaging";
+//    String key = "93ceffda-5941-11ea-9da9-025282c394f2";
+//    RestTemplate restTemplate = new RestTemplateBuilder()
+//            .rootUri(url)
+//            .defaultHeader("key", key)
+//            .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+//            .build();
+//
+//    ExternalApiResponse response = restTemplate.postForObject(url, finalRequest, ExternalApiResponse.class);

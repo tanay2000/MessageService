@@ -42,7 +42,6 @@ public class MessageController {
                 data DataReturn = new data();
                 DataReturn.setComments("Successfully Sent");
                 DataReturn.setRequestId(message.getId());
-
                 return new ResponseEntity<>(DataReturn, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(new error("INVALID_REQUEST", "Blacklisted Number"), HttpStatus.BAD_REQUEST);

@@ -4,6 +4,7 @@ import com.example.demo.MessageStatus;
 import com.example.demo.model.Message;
 import com.example.demo.model.UserSmsInput;
 import com.example.demo.repository.MessageRepository;
+import com.example.demo.service.kafka.Consumer;
 import com.example.demo.service.kafka.Producer;
 import com.example.demo.service.message.MessageService;
 import com.example.demo.service.redis.RedisService;
@@ -25,10 +26,10 @@ public class MessageServiceImpl implements MessageService {
     @Autowired
     RedisService redisService;
 
+
+
     @Override
     public Message sendSms(UserSmsInput userSmsInput) {
-//        if(redisService.checkIfExist(userSmsInput.getPhoneNumber()))
-//            return "Blacklisted";
         Message message=new Message();
         message.setMessage(userSmsInput.getMessage());
         message.setPhoneNumber((userSmsInput.getPhoneNumber()));
@@ -36,6 +37,7 @@ public class MessageServiceImpl implements MessageService {
         message.setStatus(MessageStatus.QUEUED);
         messageRepository.save(message);
         producer.sendMessageId(message);
+
         return message;
 
     }

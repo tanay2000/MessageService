@@ -55,7 +55,6 @@ public class RedisServiceImpl implements RedisService{
     public boolean checkIfExist(String phoneNumber){
         if(redisTemplate.opsForSet().isMember(KEY,phoneNumber))
             return true;
-        System.out.println("avvobwebvoweobv");
         return blacklistRepository.existsById(phoneNumber);
 
     }
