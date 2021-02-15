@@ -22,6 +22,7 @@ import org.omg.PortableInterceptor.SUCCESSFUL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Service;
 
 import javax.sound.midi.Soundbank;
@@ -41,7 +42,6 @@ public class Consumer {
     ElasticsearchRepository elasticsearchRepository;
     @Autowired
     SmsSender smsSender;
-
     @KafkaListener (topics="${kafka.topic}")
     public void consumeMessageId(String messageId) throws NotFoundException{
         try{
@@ -76,8 +76,10 @@ public class Consumer {
                 String response = smsSender.smsSend(imiSmsRequest);
                 Gson gson = new Gson();
                 ExternalApiResponse externalApiResponse = gson.fromJson(response,ExternalApiResponse.class);
+
                 System.out.println(externalApiResponse.getCode());
-//use if condition to check code using equals
+
+                //use if condition to check code using equals
                 messageObject.get().setStatus(MessageStatus.SUCCESS);
                 messageRepository.save(messageObject.get());
 

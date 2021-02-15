@@ -1,6 +1,7 @@
 
 package com.example.demo.controller;
 
+import com.example.demo.exception.InvalidRequestException;
 import com.example.demo.model.BlackListInput;
 import com.example.demo.model.Blacklist;
 import com.example.demo.repository.BlacklistRepository;
@@ -29,12 +30,12 @@ public class BlacklistController {
             Blacklist blackList = new Blacklist();
             for (String phoneNumber : phone_numbers.getPhone_numbers()) {
                 if(phoneNumber.trim().isEmpty())
+                    throw  new InvalidRequestException("Phone number can't be empty");
                 blackList.setPhoneNumber(phoneNumber);
                 System.out.println(phoneNumber);
                 redisService.addNumberToBlacklist(blackList, phoneNumber);
 
             }
-
             data Data = new data();
             Data.setComments("Successfully blacklisted");
 

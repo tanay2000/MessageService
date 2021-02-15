@@ -9,6 +9,7 @@ import com.example.demo.service.kafka.Producer;
 import com.example.demo.service.message.MessageService;
 import com.example.demo.service.redis.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -36,7 +37,12 @@ public class MessageServiceImpl implements MessageService {
         message.setId(UUID.randomUUID().toString());
         message.setStatus(MessageStatus.QUEUED);
         messageRepository.save(message);
+
+        System.out.println("Before producer");
+
         producer.sendMessageId(message);
+
+        System.out.println("After Producer");
 
         return message;
 
