@@ -18,7 +18,7 @@ public class EsModel {
     private String id;
     private String phoneNumber;
     private String message;
-    private Date createdAt = new Date();
+    private Date createdAt;
 
 
     public EsModel(Message message) {

@@ -16,6 +16,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 
 public class EsServiceImpl implements EsService {
@@ -35,18 +37,18 @@ public class EsServiceImpl implements EsService {
     }
 
     @Override
-    public Page<EsModel> findByMessage(String messageText) {
+    public Page<EsModel> findByMessage(String messageText,Optional<Integer> page) {
 
-        return esRepository.findByMessage(messageText,PageRequest.of(0,2));
+        return esRepository.findByMessage(messageText,PageRequest.of(page.orElse(0), 2));
     }
 
     @Override
-    public Page<EsModel> findByDate(EsInput esInput) {
+    public Page<EsModel> findByDate(EsInput esInput, Optional<Integer> page) {
 
         long startEpoch= helper.DateConverter(esInput.getStartDate());
         long endEpoch=helper.DateConverter(esInput.getEndDate());
 
-        return esRepository.findAllByCreatedAtBetween(startEpoch,endEpoch,PageRequest.of(0,2));
+        return esRepository.findAllByCreatedAtBetween(startEpoch,endEpoch,PageRequest.of(page.orElse(0),5 ));
 
 
 

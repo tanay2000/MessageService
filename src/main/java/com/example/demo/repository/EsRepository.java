@@ -17,6 +17,6 @@ import java.util.List;
 public interface EsRepository extends ElasticsearchRepository<EsModel,String> {
 
     Page<EsModel> findByMessage(String text, Pageable pageable);
-   Page<EsModel> findAllByCreatedAtBetween(long startEpoch,long endEpoch,Pageable pageable);
+    Page<EsModel> findAllByCreatedAtBetween(long startEpoch,long endEpoch,Pageable pageable);
 
 }

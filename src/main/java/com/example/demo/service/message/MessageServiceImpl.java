@@ -38,14 +38,9 @@ public class MessageServiceImpl implements MessageService {
         message.setStatus(MessageStatus.QUEUED);
         messageRepository.save(message);
 
-        System.out.println("Before producer");
-
         producer.sendMessageId(message);
 
-        System.out.println("After Producer");
-
         return message;
-
     }
 
     @Override

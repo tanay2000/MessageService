@@ -9,10 +9,12 @@ import com.example.demo.response.data;
 import com.example.demo.response.error;
 import com.example.demo.service.redis.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+import javax.validation.Valid;
+import java.util.Optional;
 
 
 @RestController
@@ -25,15 +27,15 @@ public class BlacklistController {
     BlacklistRepository blacklistRepository;
 
     @PostMapping
-    public ResponseEntity<Object> addNumberToBlacklist(@RequestBody BlackListInput phone_numbers) {
+    public ResponseEntity<Object> addNumberToBlacklist(@RequestBody @Valid BlackListInput phoneNumbers) {
         try {
             Blacklist blackList = new Blacklist();
-            for (String phoneNumber : phone_numbers.getPhone_numbers()) {
+            for (String phoneNumber : phoneNumbers.getPhoneNumbers()) {
                 if(phoneNumber.trim().isEmpty())
                     throw  new InvalidRequestException("Phone number can't be empty");
                 blackList.setPhoneNumber(phoneNumber);
                 System.out.println(phoneNumber);
-                redisService.addNumberToBlacklist(blackList, phoneNumber);
+                redisService.addNumberToBlacklist(blackList);
 
             }
             data Data = new data();
@@ -53,14 +55,8 @@ public class BlacklistController {
     }
 
     @GetMapping("/")
-    public List<String> findAllBlacklistedNumber() {
-        return redisService.findAllBlacklistedNumber();
-    }
-
-    @GetMapping("/{phoneNumber}")
-    public Blacklist isPresent(@PathVariable String phoneNumber) {
-
-        return redisService.numberIsPresent(phoneNumber);
+    public Page<String> findAllBlacklistedNumber(@RequestParam Optional<Integer> page) {
+        return redisService.findAllBlacklistedNumber(page);
     }
 
 }

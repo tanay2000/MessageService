@@ -5,9 +5,11 @@ import com.example.demo.exception.NotFoundException;
 import com.example.demo.model.Blacklist;
 import com.example.demo.repository.BlacklistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RedisServiceImpl implements RedisService{
@@ -17,21 +19,24 @@ public class RedisServiceImpl implements RedisService{
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
-    BlacklistRepository blacklistRepository;
+    BlacklistService blacklistService;
 
     @Override
-    public void addNumberToBlacklist(Blacklist blackList,String phoneNumber) {
+    public void addNumberToBlacklist(Blacklist blackList) {
         System.out.println("insert in db");
-        redisTemplate.opsForSet().add(KEY,phoneNumber);
-        blacklistRepository.save(blackList);
+        redisTemplate.opsForSet().add(KEY,blackList.getPhoneNumber());
+        blacklistService.addNumberToBlacklist(blackList);
     }
 
     @Override
     public void removeNumberFromBlacklist(String phoneNumber) {
         System.out.println("delete from db");
         try {
+
+            if(!checkIfExist(phoneNumber))
+                throw new NotFoundException("Number not in blacklist");
+            blacklistService.removeNumberFromBlacklist(phoneNumber);
             redisTemplate.opsForSet().remove(KEY, phoneNumber);
-            blacklistRepository.deleteById(phoneNumber);
         }
         catch (Exception exception){
             throw new NotFoundException("No not in blacklist");
@@ -39,23 +44,17 @@ public class RedisServiceImpl implements RedisService{
     }
 
     @Override
-    public List<String> findAllBlacklistedNumber() {
-        return blacklistRepository.findAllBlacklistedNumber();
-//        return redisTemplate.opsForSet().members(KEY);
+    public Page<String> findAllBlacklistedNumber(Optional<Integer> page) {
+        return blacklistService.findAllBlacklistedNumber(page);
+
     }
 
-    @Override
-    public Blacklist numberIsPresent(String phoneNumber)
-    {
-        System.out.println("ia am from db "+phoneNumber);
-        return blacklistRepository.findById(phoneNumber).get();
-    }
 
     @Override
     public boolean checkIfExist(String phoneNumber){
         if(redisTemplate.opsForSet().isMember(KEY,phoneNumber))
             return true;
-        return blacklistRepository.existsById(phoneNumber);
+        return blacklistService.checkIfExist(phoneNumber);
 
     }
 }

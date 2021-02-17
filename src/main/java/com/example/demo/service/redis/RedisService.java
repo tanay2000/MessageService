@@ -1,20 +1,16 @@
 package com.example.demo.service.redis;
 
 import com.example.demo.model.Blacklist;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import org.springframework.data.domain.Page;
+import java.util.Optional;
 
 public interface RedisService {
 
-    public void addNumberToBlacklist(Blacklist blackList,String phoneNumber);
+    public void addNumberToBlacklist(Blacklist blackList);
 
     public void removeNumberFromBlacklist(String phoneNumber);
 
-    public List<String> findAllBlacklistedNumber();
-
-    public Blacklist numberIsPresent(String phoneNumber);
+    public Page<String> findAllBlacklistedNumber(Optional<Integer> page);
 
     public boolean checkIfExist(String phoneNumber);
 }

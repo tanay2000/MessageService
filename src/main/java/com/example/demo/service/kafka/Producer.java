@@ -21,24 +21,8 @@ public class Producer {
             kafkaTemplate.send(Topic, message.getId());
         }
         catch(Exception e){
-            System.out.println(e);
+            e.printStackTrace();
         }
-//        ListenableFuture<SendResult<Message, String>> future =
-//                kafkaTemplate.send(Topic, message.getId());
-//
-//        future.addCallback(new ListenableFutureCallback<SendResult<Message, String>>() {
-//
-//            @Override
-//            public void onSuccess(SendResult<Message, String> result) {
-//                System.out.println("Sent message=[" + message.getId() +
-//                        "] with offset=[" + result.getRecordMetadata().offset() + "]");
-//            }
-//            @Override
-//            public void onFailure(Throwable ex) {
-//                System.out.println("Unable to send message=["
-//                        + message.getId() + "] due to : " + ex.getMessage());
-//            }
-//        });
     }
 }
 
