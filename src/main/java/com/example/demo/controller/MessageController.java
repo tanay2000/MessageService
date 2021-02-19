@@ -2,7 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Message;
 import com.example.demo.model.UserSmsInput;
-import com.example.demo.response.data;
+import com.example.demo.response.SuccessResponse;
 import com.example.demo.response.error;
 import com.example.demo.service.message.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +24,10 @@ public class MessageController {
 
         try {
             Message message = messageService.sendSms(userSmsInput);
-            data data = new data();
-            data.setComments("Successfully Sent");
-            data.setRequestId(message.getId());
-            return new ResponseEntity<>(data, HttpStatus.OK);
+            SuccessResponse successResponse = new SuccessResponse();
+            successResponse.setComments("Successfully Sent");
+            successResponse.setRequestId(message.getId());
+            return new ResponseEntity<>(successResponse, HttpStatus.OK);
 
         } catch (Exception ex) {
             return new ResponseEntity<>(new error(ex.getLocalizedMessage(), ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -41,8 +41,8 @@ public class MessageController {
             if (!messageService.getMessageById(requestId).isPresent()) {
                 return new ResponseEntity<>(new error("INVALID_REQUEST", "request_id not found"), HttpStatus.NOT_FOUND);
             } else {
-                data data = new data(messageService.getMessageById(requestId).get());
-                return new ResponseEntity<>(data, HttpStatus.OK);
+                SuccessResponse successResponse = new SuccessResponse(messageService.getMessageById(requestId).get());
+                return new ResponseEntity<>(successResponse, HttpStatus.OK);
             }
 
 

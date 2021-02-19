@@ -2,11 +2,10 @@ package com.example.demo.service.redis;
 
 
 import com.example.demo.exception.NotFoundException;
-import com.example.demo.model.Blacklist;
-import com.example.demo.repository.BlacklistRepository;
+import com.example.demo.model.BlackListInput;
+import com.example.demo.model.BlacklistEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
@@ -22,10 +21,17 @@ public class RedisServiceImpl implements RedisService{
     BlacklistService blacklistService;
 
     @Override
-    public void addNumberToBlacklist(Blacklist blackList) {
+    public void addNumberToBlacklist(BlackListInput phoneNumbers) {
         System.out.println("insert in db");
-        redisTemplate.opsForSet().add(KEY,blackList.getPhoneNumber());
-        blacklistService.addNumberToBlacklist(blackList);
+        BlacklistEntity blacklistEntity = new BlacklistEntity();
+        for (String phoneNumber : phoneNumbers.getPhoneNumbers()) {
+            blacklistEntity.setPhoneNumber(phoneNumber);
+            if(!blacklistEntity.getPhoneNumber().isEmpty()) {
+                redisTemplate.opsForSet().add(KEY, blacklistEntity.getPhoneNumber());
+                blacklistService.addNumberToBlacklist(blacklistEntity);
+            }
+        }
+
     }
 
     @Override
@@ -39,7 +45,7 @@ public class RedisServiceImpl implements RedisService{
             redisTemplate.opsForSet().remove(KEY, phoneNumber);
         }
         catch (Exception exception){
-            throw new NotFoundException("No not in blacklist");
+            throw exception;
         }
     }
 

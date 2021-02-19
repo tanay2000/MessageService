@@ -1,12 +1,9 @@
 package com.example.demo.service.kafka;
 
-import com.example.demo.IMIconnectApi.model.Channels;
-import com.example.demo.IMIconnectApi.model.Destination;
 import com.example.demo.IMIconnectApi.model.ImiSmsRequest;
-import com.example.demo.IMIconnectApi.model.Sms;
 import com.example.demo.IMIconnectApi.response.ExternalApiResponse;
 import com.example.demo.IMIconnectApi.service.SmsSender;
-import com.example.demo.MessageStatus;
+import com.example.demo.util.MessageStatus;
 import com.example.demo.exception.DatabaseCrashException;
 import com.example.demo.exception.InvalidRequestException;
 import com.example.demo.exception.NotFoundException;
@@ -20,12 +17,11 @@ import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Optional;
 
 @Service
-public class Consumer {
+public class KafkaConsumer {
     @Autowired
     MessageService messageService;
     @Autowired
@@ -47,27 +43,13 @@ public class Consumer {
             if (redisService.checkIfExist(messageObject.get().getPhoneNumber())) {
                 messageObject.get().setStatus(MessageStatus.FAILURE);
                 messageObject.get().setFailureComments("Blacklisted Number");
-                messageObject.get().setFailureCode("200");
+                messageObject.get().setFailureCode("403");
                 System.out.println("blacklisted");
                 messageRepository.save(messageObject.get());
             } else {
                 // Perform 3 party api function here
-                List<String> phoneNumber = new ArrayList<>();
-                phoneNumber.add(messageObject.get().getPhoneNumber());
-                Sms sms = Sms.builder().text(messageObject.get().getMessage()).build();
-                Channels channels = Channels.builder().sms(sms).build();
-                Destination destination = Destination.builder()
-                        .msisdn(phoneNumber)
-                        .coRelationId(messageObject.get().getId())
-                        .build();
 
-                List<Destination> destinationList = new ArrayList<>();
-                destinationList.add(destination);
-                ImiSmsRequest imiSmsRequest = ImiSmsRequest.builder()
-                        .channels(channels).deliveryChannel("sms")
-                        .destinations(destinationList)
-                        .build();
-
+                ImiSmsRequest imiSmsRequest = new ImiSmsRequest(messageObject.get());
                 String response = smsSender.smsSend(imiSmsRequest);
                 Gson gson = new Gson();
                 ExternalApiResponse externalApiResponse = gson.fromJson(response, ExternalApiResponse.class);

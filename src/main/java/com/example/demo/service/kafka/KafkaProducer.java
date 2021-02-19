@@ -10,7 +10,7 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
 @Service
-public class Producer {
+public class KafkaProducer {
     @Autowired
     private KafkaTemplate<Message,String> kafkaTemplate;
     @Value("${kafka.topic}")

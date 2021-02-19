@@ -16,7 +16,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @Table(name="BlackList")
-public class Blacklist implements Serializable {
+public class BlacklistEntity implements Serializable {
     @Id
     @Column(name="phone_number",nullable = false)
     private String phoneNumber;

@@ -1,6 +1,6 @@
 package com.example.demo.service.redis;
 
-import com.example.demo.model.Blacklist;
+import com.example.demo.model.BlacklistEntity;
 import com.example.demo.repository.BlacklistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,7 +14,7 @@ public class BlacklistServiceImpl implements BlacklistService{
     @Autowired
     private BlacklistRepository blacklistRepository;
     @Override
-    public void addNumberToBlacklist(Blacklist blackList) {
+    public void addNumberToBlacklist(BlacklistEntity blackList) {
         blacklistRepository.save(blackList);
     }
 

@@ -1,20 +1,19 @@
 package com.example.demo.response;
 
-import com.example.demo.MessageStatus;
+import com.example.demo.util.MessageStatus;
 import com.example.demo.model.Message;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import java.util.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class data {
+public class SuccessResponse {
     private String requestId;
     private String comments;
 
@@ -39,7 +38,7 @@ public class data {
     private Date uploadedAt;
 
 
-    public data(Message message) {
+    public SuccessResponse(Message message) {
         this.id = message.getId();
         this.phoneNumber = message.getPhoneNumber();
         this.message = message.getMessage();

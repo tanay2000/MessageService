@@ -1,15 +1,12 @@
 package com.example.demo.service.message;
 
-import com.example.demo.MessageStatus;
+import com.example.demo.util.MessageStatus;
 import com.example.demo.model.Message;
 import com.example.demo.model.UserSmsInput;
 import com.example.demo.repository.MessageRepository;
-import com.example.demo.service.kafka.Consumer;
-import com.example.demo.service.kafka.Producer;
-import com.example.demo.service.message.MessageService;
+import com.example.demo.service.kafka.KafkaProducer;
 import com.example.demo.service.redis.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -22,7 +19,7 @@ public class MessageServiceImpl implements MessageService {
     MessageRepository messageRepository;
 
     @Autowired
-    Producer producer;
+    KafkaProducer kafkaProducer;
 
     @Autowired
     RedisService redisService;
@@ -38,7 +35,7 @@ public class MessageServiceImpl implements MessageService {
         message.setStatus(MessageStatus.QUEUED);
         messageRepository.save(message);
 
-        producer.sendMessageId(message);
+        kafkaProducer.sendMessageId(message);
 
         return message;
     }

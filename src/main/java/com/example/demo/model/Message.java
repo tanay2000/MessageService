@@ -1,6 +1,6 @@
 package com.example.demo.model;
 
-import com.example.demo.MessageStatus;
+import com.example.demo.util.MessageStatus;
 
 import javax.persistence.*;
 import java.util.Date;
