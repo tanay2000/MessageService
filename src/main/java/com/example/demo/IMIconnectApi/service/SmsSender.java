@@ -4,5 +4,5 @@ import com.example.demo.IMIconnectApi.model.ImiSmsRequest;
 import com.example.demo.IMIconnectApi.response.ExternalApiResponse;
 
 public interface SmsSender {
-    public String smsSend(ImiSmsRequest imiSmsRequest);
+    public ExternalApiResponse smsSend(ImiSmsRequest imiSmsRequest);
 }

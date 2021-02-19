@@ -47,17 +47,18 @@ public class KafkaConsumer {
                 System.out.println("blacklisted");
                 messageRepository.save(messageObject.get());
             } else {
+
                 // Perform 3 party api function here
-
                 ImiSmsRequest imiSmsRequest = new ImiSmsRequest(messageObject.get());
-                String response = smsSender.smsSend(imiSmsRequest);
-                Gson gson = new Gson();
-                ExternalApiResponse externalApiResponse = gson.fromJson(response, ExternalApiResponse.class);
+                ExternalApiResponse response = smsSender.smsSend(imiSmsRequest);
 
-                System.out.println(externalApiResponse.getCode());
                 //check if 3rd party api is success or failure
-                if (externalApiResponse.getCode().equals("1001")) {
+                if (response.getApiResponseData().get(0).getCode().equals("1001")) {
                     messageObject.get().setStatus(MessageStatus.SUCCESS);
+                    messageRepository.save(messageObject.get());
+                }
+                else{
+                    messageObject.get().setStatus(MessageStatus.FAILURE);
                     messageRepository.save(messageObject.get());
                 }
 

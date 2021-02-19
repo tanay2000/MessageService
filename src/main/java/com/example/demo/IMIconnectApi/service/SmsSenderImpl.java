@@ -20,7 +20,7 @@ public class SmsSenderImpl implements SmsSender{
     @Value("${imiConnect.url}")
     private String url;
     @Override
-    public String smsSend(ImiSmsRequest imiSmsRequest) {
+    public ExternalApiResponse smsSend(ImiSmsRequest imiSmsRequest) {
 
         RestTemplate restTemplate = new RestTemplateBuilder()
                 .rootUri(url)
@@ -28,21 +28,13 @@ public class SmsSenderImpl implements SmsSender{
                 .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .build();
         try{
-            String response = restTemplate.postForObject(url,imiSmsRequest,String.class);
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.readTree(response);
-            JsonNode jsonNode = rootNode.path("response");
-            JsonNode transid = rootNode.at("/response/transid");
+            ExternalApiResponse externalApiResponse = restTemplate.postForObject(url,imiSmsRequest,ExternalApiResponse.class);
+            return externalApiResponse;
 
-            if(transid.toString().length()>0){
-                return mapper.treeToValue(jsonNode,ExternalApiResponse.class).toString();
-            }else{
-                return jsonNode.get(0).toString();
-            }
         } catch (Exception ex){
             ex.printStackTrace();
         }
-        return "null";
+        return null;
     }
 }
 
