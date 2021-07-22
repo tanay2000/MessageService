@@ -27,5 +27,8 @@ public class ExternalApiResponse {
 
         @JsonProperty("correlationid")
         private String correlationId;
+
+        private int x;
+        private int y;
     }
 }
