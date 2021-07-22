@@ -29,5 +29,6 @@ public class ExternalApiResponse {
         private String correlationId;
 
         private int x;
+        private int y;
     }
 }
