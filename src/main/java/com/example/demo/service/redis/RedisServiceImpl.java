@@ -18,7 +18,7 @@ public class RedisServiceImpl implements RedisService{
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
-    BlacklistService blacklistService;
+    private BlacklistService blacklistService;
 
     @Override
     public void addNumberToBlacklist(BlackListInput phoneNumbers) {
